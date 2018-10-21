@@ -7,7 +7,6 @@ ARCH= -arch=sm_30        #cuda compute capability
 LIBS=  
 execname= main
 
-
 #compile
 $(execname): $(objects)
 	$(NVCC) $(opt) -o $(execname) $(objects) $(LIBS) 

@@ -94,7 +94,6 @@ int main(int argc, char** argv) {
     //report results
     std::cout<<"density computed on GPU is: "<<*host_density<<" and took "<<device_elapsed_time<<std::endl;
 
-
     double left, right;
     for (unsigned long long int i = 0; i < totalTime; i++) {
         for (unsigned long long int k = 0; k < numSlices; k++) {
