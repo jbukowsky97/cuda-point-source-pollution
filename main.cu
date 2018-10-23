@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
+#include "kernels.cuh"
 
 unsigned long long int convertToNum(char* str) {
     const unsigned long long int temp = strtoull(str, NULL, 0);
@@ -53,9 +55,9 @@ int main(int argc, char** argv) {
     host_new_cylinder = (double*) malloc(numSlices * sizeof(double));
 
     //allocate memory for GPU
-    cudaMalloc((void**)&device_density, sizeof(double);
-    cudaMalloc((void**)&device_old_cylinder, sizeof(double);
-    cudaMalloc((void**)&device_new_cylinder, sizeof(double);
+    cudaMalloc((void**)&device_density, sizeof(double));
+    cudaMalloc((void**)&device_old_cylinder, sizeof(double));
+    cudaMalloc((void**)&device_new_cylinder, sizeof(double));
     cudaMemset(device_density, 0.0, sizeof(double));
 
     double* temp;
@@ -69,14 +71,14 @@ int main(int argc, char** argv) {
 
     //timing variables
     float device_elapsed_time = 0.0;
-    cudaEvent_t gpu_start, gpu_stop;
-    cudaEventCreate(&gpu_start);
-    cudaEventCreate(&gpu_stop);
+    cudaEvent_t device_start, device_stop;
+    cudaEventCreate(&device_start);
+    cudaEventCreate(&device_stop);
 
     //copy data to GPU
     cudaMemcpy(device_old_cylinder, host_old_cylinder, n*sizeof(double), cudaMemcpyHostToDevice);
     cudaMemcpy(device_new_cylinder, host_new_cylinder, n*sizeof(double), cudaMemcpyHostToDevice);
-    cudaEventRecord(gpu_start, 0);
+    cudaEventRecord(device_start, 0);
 
     //call kernel
     dim3 gridSize = 256;
@@ -84,11 +86,11 @@ int main(int argc, char** argv) {
     point_source_pollution_kernel<<<gridSize, blockSize>>>(host_old_cylinder, host_new_cylinder, device_density, n);
 
     //copy data back to host
-    cudaEventRecord(gpu_stop, 0);
-    cudaEventSyncronize(gpu_stop);
-    cudaEventElapsedTime(&gpu_elapsed_time, gpu_start, gpu_stop);
-    cudaEventDestroy(gpu_start);
-    cudaEventDestroy(gpu_stop);
+    cudaEventRecord(device_stop, 0);
+    cudaEventSynchronize(device_stop);
+    cudaEventElapsedTime(&device_elapsed_time, device_start, device_stop);
+    cudaEventDestroy(device_start);
+    cudaEventDestroy(device_stop);
     cudaMemcpy(host_density, device_density, sizeof(double), cudaMemcpyDeviceToHost);
 
     //report results
