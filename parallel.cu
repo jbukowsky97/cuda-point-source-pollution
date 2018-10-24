@@ -2,23 +2,30 @@
 
 #define BLOCK_SIZE 128
 
-__global__ void calculateNext(double* oldCylinder, double* newCylinder, const unsigned long long int numSlices) {
+__global__ void calculateNext(double* oldCylinder, double* newCylinder, const unsigned long long int numSlices, const unsigned long long int totalTime) {
     int i = blockIdx.x * BLOCK_SIZE + threadIdx.x;
 
-    if (i < numSlices) {
-        double left;
-        double right;
-        if (i == 0) {
-            left = oldCylinder[i];
-        } else {
-            left = oldCylinder[i - 1];
+    double* temp;
+    for (unsigned long long int t = 0; t < totalTime; t++) {
+        if (i < numSlices) {
+            double left;
+            double right;
+            if (i == 0) {
+                left = oldCylinder[i];
+            } else {
+                left = oldCylinder[i - 1];
+            }
+            if (i == numSlices - 1) {
+                right = oldCylinder[i];
+            } else {
+                right = oldCylinder[i + 1];
+            }
+            newCylinder[i] = (left + right) / 2.0;
         }
-        if (i == numSlices - 1) {
-            right = oldCylinder[i];
-        } else {
-            right = oldCylinder[i + 1];
-        }
-        newCylinder[i] = (left + right) / 2.0;
+        temp = oldCylinder;
+        oldCylinder = newCylinder;
+        newCylinder = temp;
+        __syncthreads();
     }
 }
 
@@ -36,7 +43,6 @@ __global__ void initializeArray(double* cylinder, const unsigned long long int n
 
 extern "C" double gpuCalculate(const unsigned long long int numSlices, const unsigned long long int totalTime, const double concentration, const unsigned long long int desiredPoint) {
     cudaError_t mallocResult;
-    double* temp;
     double* oldCylinder;
     double* newCylinder;
 
@@ -58,9 +64,10 @@ extern "C" double gpuCalculate(const unsigned long long int numSlices, const uns
 
     initializeArray<<<dimGrid, dimBlock>>>(oldCylinder, numSlices, concentration);
 
-    for (unsigned long long int i = 0; i < totalTime; i++) {
-        calculateNext<<<dimGrid, dimBlock>>>(oldCylinder, newCylinder, numSlices);
-        temp = oldCylinder;
+    calculateNext<<<dimGrid, dimBlock>>>(oldCylinder, newCylinder, numSlices, totalTime);
+
+    if (totalTime % 2 != 0) {
+        double* temp = oldCylinder;
         oldCylinder = newCylinder;
         newCylinder = temp;
     }
