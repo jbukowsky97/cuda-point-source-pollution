@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+double gpuCalculate(const unsigned long long int numSlices, const unsigned long long int totalTime, const double concentration, const unsigned long long int desiredPoint);
+
 unsigned long long int convertToNum(char* str) {
     const unsigned long long int temp = strtoull(str, NULL, 0);
     if (temp <= 0) {
@@ -38,45 +40,6 @@ int main(int argc, char** argv) {
 
     const unsigned long long int numSlices = cylinderSize / sliceWidth;
 
-    double* oldCylinder = (double*) calloc(numSlices, sizeof(double));
-    double* newCylinder = (double*) malloc(numSlices * sizeof(double));
-    double* temp;
-
-    if (oldCylinder == NULL || newCylinder == NULL) {
-        printf("Error while allocating memory\n");
-        exit(EXIT_FAILURE);
-    }
-
-    oldCylinder[0] = concentration;
-
-    double left, right;
-    for (unsigned long long int i = 0; i < totalTime; i++) {
-        for (unsigned long long int k = 0; k < numSlices; k++) {
-            if (k == 0) {
-                left = oldCylinder[k];
-            } else {
-                left = oldCylinder[k - 1];
-            }
-            if (k == numSlices - 1) {
-                right = oldCylinder[k];
-            } else {
-                right = oldCylinder[k + 1];
-            }
-            newCylinder[k] = (left + right) / 2.0;
-        }
-        temp = oldCylinder;
-        oldCylinder = newCylinder;
-        newCylinder = temp;
-    }
-
-    printf("%f\n", oldCylinder[desiredPoint]);
-
-    double fudge = 0.0;
-    for (int i = 0; i < numSlices; i++) {
-        fudge += oldCylinder[i];
-    }
-    printf("total:\t%f\n", fudge);
-
-    free(oldCylinder);
-    free(newCylinder);
+    double answer = gpuCalculate(numSlices, totalTime, concentration, desiredPoint);
+    printf("%f\n", answer);
 }
