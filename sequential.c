@@ -11,32 +11,24 @@ unsigned long long int convertToNum(char* str) {
 }
 
 int main(int argc, char** argv) {
-    if (argc != 6) {
-        printf("Usage:\n\t%s <cylinder size> <slice width> <total time> <point source concentration> <desired point>\n", argv[0]);
+    if (argc != 5) {
+        printf("Usage:\n\t%s <cylinder slices> <total time> <point source concentration> <desired point>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
-    const unsigned long long int cylinderSize = convertToNum(argv[1]);
-    const unsigned long long int sliceWidth = convertToNum(argv[2]);
-    const unsigned long long int totalTime = convertToNum(argv[3]);
-    double concentration = atof(argv[4]);
+    const unsigned long long int numSlices = convertToNum(argv[1]);
+    const unsigned long long int totalTime = convertToNum(argv[2]);
+    double concentration = atof(argv[3]);
     if (concentration < 0) {
         printf("Inputs must be greater than 0\n");
         exit(EXIT_FAILURE);
     }
-    const unsigned long long int desiredPoint = convertToNum(argv[5]);
+    const unsigned long long int desiredPoint = convertToNum(argv[4]);
 
-    if (desiredPoint > cylinderSize) {
+    if (desiredPoint > numSlices) {
         printf("Desired point must be less than cylinder size\n");
         exit(EXIT_FAILURE);
     }
-
-    if (cylinderSize % sliceWidth != 0) {
-        printf("Slice width must evenly divide cylinder size\n");
-        exit(EXIT_FAILURE);
-    }
-
-    const unsigned long long int numSlices = cylinderSize / sliceWidth;
 
     double* oldCylinder = (double*) calloc(numSlices, sizeof(double));
     double* newCylinder = (double*) malloc(numSlices * sizeof(double));

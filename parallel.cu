@@ -1,31 +1,18 @@
 #include <stdio.h>
 
-#define BLOCK_SIZE 128
+#define BLOCK_SIZE 256
 
 __global__ void calculateNext(double* oldCylinder, double* newCylinder, const unsigned long long int numSlices, const unsigned long long int totalTime) {
     int i = blockIdx.x * BLOCK_SIZE + threadIdx.x;
 
-    double* temp;
-    for (unsigned long long int t = 0; t < totalTime; t++) {
-        if (i < numSlices) {
-            double left;
-            double right;
-            if (i == 0) {
-                left = oldCylinder[i];
-            } else {
-                left = oldCylinder[i - 1];
-            }
-            if (i == numSlices - 1) {
-                right = oldCylinder[i];
-            } else {
-                right = oldCylinder[i + 1];
-            }
-            newCylinder[i] = (left + right) / 2.0;
+    if (i < numSlices) {
+        if (i == 0) {
+            newCylinder[i] = (oldCylinder[i] + oldCylinder[i + 1]) / 2.0;
+        } else if (i == numSlices - 1) {
+            newCylinder[i] = (oldCylinder[i - 1] + oldCylinder[i]) / 2.0;
+        } else {
+            newCylinder[i] = (oldCylinder[i - 1] + oldCylinder[i + 1]) / 2.0;
         }
-        temp = oldCylinder;
-        oldCylinder = newCylinder;
-        newCylinder = temp;
-        __syncthreads();
     }
 }
 
@@ -45,6 +32,7 @@ extern "C" double gpuCalculate(const unsigned long long int numSlices, const uns
     cudaError_t mallocResult;
     double* oldCylinder;
     double* newCylinder;
+    double* temp;
 
     mallocResult = cudaMalloc((void**) &oldCylinder, numSlices * sizeof(double));
     if (mallocResult != cudaSuccess) {
@@ -64,10 +52,9 @@ extern "C" double gpuCalculate(const unsigned long long int numSlices, const uns
 
     initializeArray<<<dimGrid, dimBlock>>>(oldCylinder, numSlices, concentration);
 
-    calculateNext<<<dimGrid, dimBlock>>>(oldCylinder, newCylinder, numSlices, totalTime);
-
-    if (totalTime % 2 != 0) {
-        double* temp = oldCylinder;
+    for (int i = 0; i < totalTime; i++) {
+        calculateNext<<<dimGrid, dimBlock>>>(oldCylinder, newCylinder, numSlices, totalTime);
+        temp = oldCylinder;
         oldCylinder = newCylinder;
         newCylinder = temp;
     }
