@@ -3,10 +3,19 @@
 
 double gpuCalculate(const unsigned long long int slicesRow, const unsigned long long int slicesCol, const unsigned long long int totalTime, const double concentration, const unsigned long long int desiredPointRow, const unsigned long long int desiredPointCol);
 
-unsigned long long int convertToNum(char* str) {
+unsigned long long int convertToLLU(char* str, char* inputName, int compare) {
     const unsigned long long int temp = strtoull(str, NULL, 0);
-    if (temp < 0) {
-        printf("Inputs must be greater than 0\n");
+    if (temp < compare) {
+        printf("%s must be greater than or equal to %d\n", inputName, compare);
+        exit(EXIT_FAILURE);
+    }
+    return temp;
+}
+
+double convertToDouble(char* str, char* inputName, int compare) {
+    const double temp = atof(str);
+    if (temp <= compare) {
+        printf("%s must be greater than %d\n", inputName, compare);
         exit(EXIT_FAILURE);
     }
     return temp;
@@ -22,16 +31,12 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
-    const unsigned long long int slicesRow = convertToNum(argv[1]);
-    const unsigned long long int slicesCol = convertToNum(argv[2]);
-    const unsigned long long int totalTime = convertToNum(argv[3]);
-    double concentration = atof(argv[4]);
-    if (concentration <= 0) {
-        printf("Inputs must be greater than 0\n");
-        exit(EXIT_FAILURE);
-    }
-    const unsigned long long int desiredPointRow = convertToNum(argv[5]);
-    const unsigned long long int desiredPointCol = convertToNum(argv[6]);
+    const unsigned long long int slicesRow = convertToLLU(argv[1], "Rectangle Rows", 1);
+    const unsigned long long int slicesCol = convertToLLU(argv[2], "Rectangle Columns", 1);
+    const unsigned long long int totalTime = convertToLLU(argv[3], "Total Time", 0);
+    double concentration = convertToDouble(argv[4], "Concentration", 0);
+    const unsigned long long int desiredPointRow = convertToLLU(argv[5], "Desired Point Row", 0);
+    const unsigned long long int desiredPointCol = convertToLLU(argv[6], "Desired Point Column", 0);
 
     if (desiredPointRow > slicesRow || desiredPointCol > slicesCol) {
         printf("Desired point must be less than cylinder size\n");
