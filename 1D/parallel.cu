@@ -2,7 +2,7 @@
 
 #define BLOCK_SIZE 256
 
-__global__ void calculateNext(double* oldCylinder, double* newCylinder, const unsigned long long int numSlices, const unsigned long long int totalTime) {
+__global__ void calculateNext(double* oldCylinder, double* newCylinder, const unsigned long long int numSlices) {
     int i = blockIdx.x * BLOCK_SIZE + threadIdx.x;
 
     if (i < numSlices) {
@@ -53,7 +53,7 @@ extern "C" double gpuCalculate(const unsigned long long int numSlices, const uns
     initializeArray<<<dimGrid, dimBlock>>>(oldCylinder, numSlices, concentration);
 
     for (int i = 0; i < totalTime; i++) {
-        calculateNext<<<dimGrid, dimBlock>>>(oldCylinder, newCylinder, numSlices, totalTime);
+        calculateNext<<<dimGrid, dimBlock>>>(oldCylinder, newCylinder, numSlices);
         temp = oldCylinder;
         oldCylinder = newCylinder;
         newCylinder = temp;
