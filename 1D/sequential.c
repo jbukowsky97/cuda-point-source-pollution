@@ -23,7 +23,7 @@ double convertToDouble(char* str, char* inputName, int compare) {
 
 int main(int argc, char** argv) {
     if (argc < NUM_ARGS || argc % 2 != 0) {
-        printf("Usage:\n\t%s <cylinder slices> <total time> <desired point> <impulse 1 location> <impulse 1 concentration>...<impulse N location> <impulse N concentration> \n", argv[0]);
+        printf("Usage:\n\t%s <cylinder slices> <total time> <desired point> [<impulse 1 location> <impulse 1 concentration>...<impulse N location> <impulse N concentration>]\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
