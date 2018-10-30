@@ -92,28 +92,27 @@ int main(int argc, char** argv) {
                 total += cDown(oldCylinder, slicesRow, row, col);
                 newCylinder[cIndex(slicesCol, row, col)] = total / 4.0;
                 
-                if (totalTime % 100 == 0) {
-                    if (col == 0) {
-                        printf("%f,", oldCylinder[cIndex(slicesRow, row, col)]);
-                    }
-                    else if (col == slicesRow - 1) {
-                        printf("%f", oldCylinder[cIndex(slicesRow, row, col)]);
-                    }
-                    else {
-                        printf("%f,", oldCylinder[cIndex(slicesRow, row, col)]);    
-                    }
-                }    
-            }
+                if (col == 0) {
+                    printf("%f,", oldCylinder[cIndex(slicesRow, row, col)]);
+                }
+                else if (col == slicesRow - 1) {
+                    printf("%f", oldCylinder[cIndex(slicesRow, row, col)]);
+                }
+                else {
+                    printf("%f,", oldCylinder[cIndex(slicesRow, row, col)]);    
+                }
+            }    
             if (row < slicesRow - 1){
-               printf("\n");
+                printf("\n");
             }
         }
         temp = oldCylinder;
         oldCylinder = newCylinder;
         newCylinder = temp;
 
+        
         printf("\n-\n");
-    }
+        }
 
     // printf("%f\n", oldCylinder[cIndex(slicesRow, desiredPointRow, desiredPointCol)]);
              
