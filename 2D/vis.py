@@ -17,25 +17,25 @@ with open('single-heatmap.txt') as file:
 
 #split string into floats
 array = []
-for timestep in all_timesteps:
-	current_timestep = []
-	for nums_string in timestep:
-		nums = []
-		for num in nums_string.split(','):
-			nums.append(float(num))
-		current_timestep.append(nums)
-	array.append(current_timestep)
+for i in range(len(all_timesteps)):
+	if i % 100 == 0:
+		current_timestep = []
+		for nums_string in all_timesteps[i]:
+			nums = []
+			for num in nums_string.split(','):
+				nums.append(float(num))
+			current_timestep.append(nums)
+		array.append(current_timestep)
 
 #convert to numpy array
 np_array = np.array(array)
 
+#save each .png file to be used by the gif creating script
 image_num = 0
 for timestep in np_array:
 	plt.imshow(timestep, cmap='hot', interpolation='nearest')
-	plt.savefig('heatmap' + str(image_num) + '.png', bbox_inches='tight')
+	plt.savefig('/home/dante/Documents/school/cuda-point-source-pollution/2D/gif-images/' + str(image_num) + 'heatmap.png', bbox_inches='tight')
 	image_num += 1
-# plt.imshow(np_array, cmap='hot', interpolation='nearest')
-# plt.show()
 
 
 

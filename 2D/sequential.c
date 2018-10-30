@@ -112,27 +112,7 @@ int main(int argc, char** argv) {
 
         
         printf("\n-\n");
-        }
-
-    // printf("%f\n", oldCylinder[cIndex(slicesRow, desiredPointRow, desiredPointCol)]);
-             
-    // for (unsigned long long int row = 0; row < slicesRow; row++) {
-    //     for (unsigned long long int col = 0; col < slicesCol; col++) {
-    //         if (col == 0) {
-    //             printf("%f,", oldCylinder[cIndex(slicesRow, row, col)]);
-    //         }
-    //         else if (col == slicesRow - 1) {
-    //             printf("%f", oldCylinder[cIndex(slicesRow, row, col)]);
-    //         }
-    //         else {
-    //             printf("%f,", oldCylinder[cIndex(slicesRow, row, col)]);    
-    //         }
-	        
-    //     }
-    //     if (row < slicesRow - 1){
-    //         printf("\n");
-    //     }
-    // }
+    }
 
     printf("\n");
     free(oldCylinder);
