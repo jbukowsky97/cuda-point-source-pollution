@@ -79,8 +79,9 @@ int main(int argc, char** argv) {
     }
 
     oldCylinder[0] = concentration;
-
+    
     double total;
+
     for (unsigned long long int i = 0; i < totalTime; i++) {
         for (unsigned long long int row = 0; row < slicesRow; row++) {
             for (unsigned long long int col = 0; col < slicesCol; col++) {
@@ -89,16 +90,52 @@ int main(int argc, char** argv) {
                 total += cRight(oldCylinder, slicesRow, slicesCol, row, col);
                 total += cUp(oldCylinder, slicesRow, row, col);
                 total += cDown(oldCylinder, slicesRow, row, col);
-                newCylinder[cIndex(slicesRow, row, col)] = total / 4.0;
+                newCylinder[cIndex(slicesCol, row, col)] = total / 4.0;
+                
+                if (totalTime % 100 == 0) {
+                    if (col == 0) {
+                        printf("%f,", oldCylinder[cIndex(slicesRow, row, col)]);
+                    }
+                    else if (col == slicesRow - 1) {
+                        printf("%f", oldCylinder[cIndex(slicesRow, row, col)]);
+                    }
+                    else {
+                        printf("%f,", oldCylinder[cIndex(slicesRow, row, col)]);    
+                    }
+                }    
+            }
+            if (row < slicesRow - 1){
+               printf("\n");
             }
         }
         temp = oldCylinder;
         oldCylinder = newCylinder;
         newCylinder = temp;
+
+        printf("\n-\n");
     }
 
-    printf("%f\n", oldCylinder[cIndex(slicesRow, desiredPointRow, desiredPointCol)]);
+    // printf("%f\n", oldCylinder[cIndex(slicesRow, desiredPointRow, desiredPointCol)]);
+             
+    // for (unsigned long long int row = 0; row < slicesRow; row++) {
+    //     for (unsigned long long int col = 0; col < slicesCol; col++) {
+    //         if (col == 0) {
+    //             printf("%f,", oldCylinder[cIndex(slicesRow, row, col)]);
+    //         }
+    //         else if (col == slicesRow - 1) {
+    //             printf("%f", oldCylinder[cIndex(slicesRow, row, col)]);
+    //         }
+    //         else {
+    //             printf("%f,", oldCylinder[cIndex(slicesRow, row, col)]);    
+    //         }
+	        
+    //     }
+    //     if (row < slicesRow - 1){
+    //         printf("\n");
+    //     }
+    // }
 
+    printf("\n");
     free(oldCylinder);
     free(newCylinder);
 }
